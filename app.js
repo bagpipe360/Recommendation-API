@@ -11,21 +11,35 @@ var config = {
 };
 
 
-// serve swagger json
-app.get(/\/swagger\/?.*/, restify.serveStatic ({
-  directory: './api'
-}));
+// // serve swagger json
+// app.get(/\/swagger\/?.*/, restify.serveStatic ({
+//   directory: './api'
+// }));
 
 
 
-app.get(/\/api\/?.*/, restify.serveStatic({
-  directory: './public',
-  default: '.index.html'
-}));
+// app.get(/\/api\/?.*/, restify.serveStatic({
+//   directory: './public',
+//   default: 'index.html'  
+// }));
 
-app.get('test', function (req, res, next) {
-  res.send('confirm');
-});
+
+// Add headers
+app.use(function (req, res, next) {
+  
+      // Website you wish to allow to connect
+      res.setHeader('Access-Control-Allow-Origin', '*');
+  
+      // Request methods you wish to allow
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  
+      // Request headers you wish to allow
+      res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  
+  
+      // Pass to next layer of middleware
+      next();
+  });
 
 
 SwaggerRestify.create(config, function(err, swaggerRestify) {
