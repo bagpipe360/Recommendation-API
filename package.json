@@ -1,0 +1,24 @@
+{
+  "name": "DriverRec",
+  "version": "0.0.1",
+  "private": true,
+  "description": "New Swagger API Project",
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "main": "app.js",
+  "dependencies": {
+    "mocha": "^3.5.0",
+    "restify": "^4.0.2",
+    "swagger-jsdoc": "^1.3.0",
+    "swagger-restify-mw": "^0.1.0"
+  },
+  "devDependencies": {
+    "should": "^7.1.0",
+    "supertest": "^1.0.0"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "test": "swagger project test"
+  }
+}
