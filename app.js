@@ -23,6 +23,10 @@ app.get(/\/api\/?.*/, restify.serveStatic({
   default: '.index.html'
 }));
 
+app.get('test', function (req, res, next) {
+  res.send('confirm');
+});
+
 
 SwaggerRestify.create(config, function(err, swaggerRestify) {
   if (err) { throw err; }
