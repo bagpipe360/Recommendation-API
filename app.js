@@ -20,6 +20,8 @@ app.use(
 );
 
 app.get('api/drivers', drivers.get);
+app.get('api/drivers/:id', drivers.getById);
+
 
 
 SwaggerRestify.create(config, function(err, swaggerRestify) {

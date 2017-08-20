@@ -3,11 +3,10 @@ var sampleDrivers = require('../../sample_data/drivers');
 function DriversController() {
     var that = this;
     // Memory storage
-    that.store = [];
   
     var findDriverById = function(req) {
-      var found = that.store.filter(function(p) {
-        return p.Id = parseInt(req.params.id);
+      var found = sampleDrivers.filter(function(p) {
+        return p.id == parseInt(req.params.id);
       })
       if (found && found.length > 0) {
         return found[0];
