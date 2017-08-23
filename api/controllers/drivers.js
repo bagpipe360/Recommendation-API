@@ -2,7 +2,6 @@ var sampleDrivers = require('../../sample_data/drivers');
 
 function DriversController() {
     var that = this;
-    // Memory storage
   
     var findDriverById = function(req) {
       var found = sampleDrivers.filter(function(p) {
@@ -24,10 +23,9 @@ function DriversController() {
       if (found){
         res.send(200, found);
       } else {
-        res.send(404, 'product not found');
+        res.send(404, 'Driver not found');
       }
     }
-  
 
   
   }

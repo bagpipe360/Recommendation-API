@@ -3,8 +3,8 @@
 var SwaggerRestify = require('swagger-restify-mw');
 var restify = require('restify');
 var app = restify.createServer();
-var sampleDeliveries = require('./sample_data/deliveries');
 var drivers = require('./api/controllers/drivers');
+var recomendations = require('./api/controllers/recommendations');
 module.exports = app; // for testing
 
 var config = {
@@ -19,8 +19,9 @@ app.use(
   }
 );
 
-app.get('api/drivers', drivers.get);
-app.get('api/drivers/:id', drivers.getById);
+app.get('drivers', drivers.get);
+app.get('drivers/:id', drivers.getById);
+// app.get('api/drivers/:id/recommendations', recommendations.getById);
 
 
 
