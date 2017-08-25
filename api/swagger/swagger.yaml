@@ -17,6 +17,19 @@ parameters:
     required: true
     type: string
 paths:
+  '/drivers':
+    get:
+      operationId: GetDrivers
+      tags:
+        - Drivers
+      responses:
+        '200':
+          description: Get all drivers.
+          schema:
+            $ref: '#/definitions/DriverList'
+        '404':
+          description: No drivers in system.
+
   '/drivers/{driverId}':
     parameters:
       - $ref: '#/parameters/driverId'
@@ -78,3 +91,7 @@ definitions:
     type: array
     items:
       $ref: '#/definitions/Delivery'
+  DriverList:
+    type: array
+    items:
+      $ref: '#/definitions/Driver'

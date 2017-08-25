@@ -1,11 +1,16 @@
-var sampleDeliveries= require('../../sample_data/deliveries');
+Delivery = require('../models/Delivery');
 
 function DeliveriesController() {
-    var that = this;
-    
-    that.deliveries = sampleDeliveries;
+    var deliveriesStore = [];
+
+    for (var i = 0; i < 10; i++) {
+        deliveriesStore.push(new Delivery());
+    }
   
-  }
-  
-  module.exports = new DeliveriesController();
-  
+    this.get = function () {
+        return deliveriesStore;
+    }
+
+}
+
+module.exports = new DeliveriesController();

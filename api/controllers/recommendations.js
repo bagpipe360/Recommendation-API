@@ -1,53 +1,80 @@
 var drivers = require('./drivers');
 var deliveries = require('./deliveries');
+var distance = require('google-distance');
+var haversine = require('haversine');
 
 function RecommendationsController() {
-    var that = this;
-    console.log(deliveries.deliveries);
+    // Load static deliveries
+    var deliveriesStore = deliveries.get();
+    // Keep track of best delivery IDs so they are not recommended multiple times
+    var bestDeliveries = [];
 
     /**
-     * Finds closest distance using the Haversine formula
-     * @param {*} driver 
+     * Compare function to return ASC by distances
+     * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+     * @param {*} a 
+     * @param {*} b 
      */
-    var findClosestLocation = function (latitude, longitude, locations) {
-        var distances = locations.map(function (l) {
-            return distanceBetweenLatandLongs(latitude, longitude, l.latitude, l.longitude);
-        })
-        return Math.min(distances);
+    var compareDistances = function (a, b) {
+        return a.distance - b.distance;
     }
 
-    var distanceBetweenLatandLongs = function (lat1, long1, lat2, long2) {
-        var p = 0.017453292519943295;
-        var a = 0.5 - cos((lat2 - lat1) * p) / 2 + cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2;
-        return 12742 * asin(sqrt(a))
-
-    }
-
-    var findClosestDelivery = function (driver) {
-        var originParam = "origin=" + driver.latitude + "," + driver.longitude;
-    }
-
-    var findRecommendationByDriverId = function (req) {
-        var driver = drivers.findDriverById(req)
-        if (!driver) {
-            return null;
-        }
-        closestDelivery = findClosestDelivery(driver);
-
-        return null;
-    }
-
-
-
-    that.getById = function (req, res, next) {
-        var recommendation = findRecommendationByDriverId(req);
-        if (recommendation) {
-            res.send(200, recommendation);
+    /**
+     * Finds deliveries based on proxmitiy of user and other user's current recommendations
+     * returns Array of Deliveries
+     * @param {*} location 
+     */
+    var findRecommendations = function (location) {
+        // Array of deliveries sorted by distance to user, not included best delivery
+        var sortedDeliveries = [];
+        var tempDistance = 0;
+        var prevDistance = 0;
+        var bestDelivery;
+        // Add distance to the delivery objects, and keep track of the closest delivery to the input location
+        deliveriesStore = deliveriesStore.map(function (delivery) {
+            tempDistance = distanceBetweenLatandLongs(location.latitude, location.longitude, delivery.pickup_location.latitude, delivery.pickup_location.longitude);
+            // A bestDelivery needs to be the closest to the driver and not have been recommended to another driver
+            if (tempDistance < prevDistance && bestDeliveries.indexOf(delivery.id) == -1) {
+                bestDelivery = delivery;
+            } else {
+                sortedDeliveries.push(delivery);
+            }
+            delivery.distance = tempDistance;
+            prevDistance = tempDistance;
+            return delivery;
+        });
+        // Sort the built deliveries, which include all but the bestDelivery
+        sortedDeliveries = sortedDeliveries.sort(compareDistances);
+        // Store the best delivery ID so it is not reassigned to another user
+        if (bestDelivery) {
+            bestDeliveries.push(bestDelivery.id);
+            return [bestDelivery].concat(sortedDeliveries)
         } else {
-            res.send(404, 'Invalid driver id.');
+            // If no bestDelivery was found, return all deliveries in ascending order
+            return sortedDeliveries;
         }
     }
 
+    /**
+     * Uses Haversine formula to calculate distance between two lat/long pairs
+     * returns float
+     * @param {*} lat1 
+     * @param {*} long1 
+     * @param {*} lat2 
+     * @param {*} long2 
+     */
+    var distanceBetweenLatandLongs = function (lat1, long1, lat2, long2) {
+        var start = { latitude: lat1, longitude: long1 };
+        var end = { latitude: lat2, longitude: long2 };
+        return haversine(start, end, { unit: 'mile' });
+    }
+
+    /**
+     * /drivers/:id/recommendations
+     */
+    this.getRecommendations = function (driver) {
+        return findRecommendations(driver.current_location);
+    }
 
 }
 

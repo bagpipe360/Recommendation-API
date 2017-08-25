@@ -1,8 +1,8 @@
 var should = require('should');
 var request = require('supertest');
 var server = require('../../../app');
+var drivers = require('../../../api/controllers/drivers');
 
-var api = require('../helpers/drivers');
 
 describe('controllers', function () {
     describe('drivers', function () {
@@ -14,7 +14,6 @@ describe('controllers', function () {
                     .expect('Content-Type', /json/)
                     .expect(200)
                     .end(function (err, res) {
-                        should.not.exist(err);
                         done();
                     });
             });
@@ -25,21 +24,21 @@ describe('controllers', function () {
                     .expect('Content-Type', /json/)
                     .expect(200)
                     .end(function (err, res) {
-                        JSON.parse(res.text).should.be.instanceOf(Array);
+                        res.body.should.be.instanceOf(Array);
                         done();
                     })
             });
-            it('if first item is occupied should have id, name and current_locations', function (done) {
+            it('if first item is occupied should be of type Object with id, name and current_location params', function (done) {
                 request(server)
                     .get('/drivers')
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
                     .expect(200)
                     .end(function (err, res) {
-                        var json = JSON.parse(res.text);
-                        json[0].should.have.property('id');
-                        json[0].should.have.property('name');
-                        json[0].should.have.property('current_location');
+                        res.body[0].should.be.instanceOf(Object);                        
+                        res.body[0].should.have.property('id');
+                        res.body[0].should.have.property('name');
+                        res.body[0].should.have.property('current_location');
                         done();
                     })
             });
@@ -50,9 +49,8 @@ describe('controllers', function () {
                     .expect('Content-Type', /json/)
                     .expect(200)
                     .end(function (err, res) {
-                        var json = JSON.parse(res.text);
-                        json[0].current_location.should.have.property('latitude');
-                        json[0].current_location.should.have.property('longitude');
+                        res.body[0].current_location.should.have.property('latitude');
+                        res.body[0].current_location.should.have.property('longitude');
                         done();
                     });
             });
@@ -65,34 +63,34 @@ describe('controllers', function () {
                     .expect('Content-Type', /json/)
                     .expect(200)
                     .end(function (err, res) {
-                        should.not.exist(err);
                         done();
                     });
             });
-            it('should return 404', function (done) {
+            it('invalid user id should return 404', function (done) {
                 request(server)
                     .get('/drivers/-1')
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
                     .expect(404)
                     .end(function (err, res) {
-                        should.not.exist(err);
                         done();
                     });
             });
             it('should have properties of Driver- id, name, current_location', function (done) {
+                var driverStore = drivers.get();
+                var id = driverStore[0].id;
                 request(server)
-                    .get('/drivers/1')
+                    .get('/drivers/' + id)
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
                     .expect(404)
                     .end(function (err, res) {
-                        var json = JSON.parse(res.text);
-                        json.should.have.property('id');
-                        json.should.have.property('name');
-                        json.should.have.property('current_location');
-                        json.current_location.should.have.property('latitude');
-                        json.current_location.should.have.property('longitude');
+                        console.log(res.body);
+                        res.body.should.have.property('id');
+                        res.body.should.have.property('name');
+                        res.body.should.have.property('current_location');
+                        res.body.current_location.should.have.property('latitude');
+                        res.body.current_location.should.have.property('longitude');
                         done();
                     });
             });

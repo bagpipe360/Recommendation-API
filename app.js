@@ -21,13 +21,10 @@ app.use(
 
 app.get('drivers', drivers.get);
 app.get('drivers/:id', drivers.getById);
-// app.get('api/drivers/:id/recommendations', recommendations.getById);
-
-
+app.get('drivers/:id/recommendations', drivers.getRecommendations);
 
 SwaggerRestify.create(config, function(err, swaggerRestify) {
   if (err) { throw err; }
-
   swaggerRestify.register(app);
 
   var port = process.env.PORT || 3000;
