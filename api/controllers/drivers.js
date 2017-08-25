@@ -2,10 +2,10 @@ var Driver = require('../models/Driver');
 var recommendations = require('./recommendations');
 
 function DriversController() {  
-
+    // Maintain cache of drivers
     var driverStore = [];
 
-    for(var i = 0; i < 20; i++) {
+    for(var i = 0; i < 50; i++) {
       driverStore.push(new Driver());
     }
 

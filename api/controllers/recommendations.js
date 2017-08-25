@@ -36,9 +36,8 @@ function RecommendationsController() {
             // A bestDelivery needs to be the closest to the driver and not have been recommended to another driver
             if (tempDistance < prevDistance && bestDeliveries.indexOf(delivery.id) == -1) {
                 bestDelivery = delivery;
-            } else {
-                sortedDeliveries.push(delivery);
-            }
+            } 
+            sortedDeliveries.push(delivery);
             delivery.distance = tempDistance;
             prevDistance = tempDistance;
             return delivery;
@@ -48,6 +47,10 @@ function RecommendationsController() {
         // Store the best delivery ID so it is not reassigned to another user
         if (bestDelivery) {
             bestDeliveries.push(bestDelivery.id);
+            // Remove bestDelivery from sortedDeliveries
+            sortedDeliveries = sortedDeliveries.filter(function( obj ) {
+                return obj.id !== bestDelivery.id;
+            });
             return [bestDelivery].concat(sortedDeliveries)
         } else {
             // If no bestDelivery was found, return all deliveries in ascending order
