@@ -23,6 +23,11 @@ app.get('drivers', drivers.get);
 app.get('drivers/:id', drivers.getById);
 app.get('drivers/:id/recommendations', drivers.getRecommendations);
 
+app.get(/\/swagger\/?.*/, restify.plugins.serveStatic({
+  directory: './public',
+  default: 'swagger.yaml'
+}));
+
 SwaggerRestify.create(config, function(err, swaggerRestify) {
   if (err) { throw err; }
   swaggerRestify.register(app);
